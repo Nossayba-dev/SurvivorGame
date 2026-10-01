@@ -11,6 +11,8 @@ public partial class Hud : CanvasLayer
     private Label _levelLabel;
     private Label _waveLabel;
     private Label _timeLabel;
+    private Label _scoreLabel;
+    private Label _highScoreLabel;
 
     public override void _Ready()
     {
@@ -22,6 +24,8 @@ public partial class Hud : CanvasLayer
         _levelLabel = GetNode<Label>("%LevelLabel");
         _waveLabel = GetNode<Label>("%WaveLabel");
         _timeLabel = GetNode<Label>("%TimeLabel");
+        _scoreLabel = GetNode<Label>("%ScoreLabel");
+        _highScoreLabel = GetNode<Label>("%HighScoreLabel");
     }
 
     public void SetHealth(int health, int maxHealth)
@@ -41,6 +45,12 @@ public partial class Hud : CanvasLayer
     public void SetWave(int wave)
     {
         _waveLabel.Text = $"Wave {wave}";
+    }
+
+    public void SetScore(int score, int highScore)
+    {
+        _scoreLabel.Text = $"Score {score}";
+        _highScoreLabel.Text = $"Best {highScore}";
     }
 
     public void SetTime(float seconds)

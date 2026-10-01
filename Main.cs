@@ -9,6 +9,8 @@ public partial class Main : Node2D
     private Hud _hud;
 
     private float _elapsed;
+    private int _score;
+    private int _highScore;
 
     public override void _Ready()
     {
@@ -21,11 +23,16 @@ public partial class Main : Node2D
         _player.HealthChanged += _hud.SetHealth;
         _player.XpChanged += _hud.SetXp;
         _spawner.WaveChanged += _hud.SetWave;
+        _spawner.EnemyKilled += OnEnemyKilled;
+        _player.Died += OnPlayerDied;
+
+        _highScore = HighScore.Load();
 
         // Signals only report changes, so show the starting values once.
         _hud.SetHealth(_player.Health, _player.MaxHealth);
         _hud.SetXp(_player.Xp, _player.XpToNextLevel, _player.Level);
         _hud.SetWave(_spawner.Wave);
+        _hud.SetScore(_score, _highScore);
     }
 
     public override void _Process(double delta)
@@ -35,5 +42,21 @@ public partial class Main : Node2D
 
         _elapsed += (float)delta;
         _hud.SetTime(_elapsed);
+    }
+
+    private void OnEnemyKilled(int scoreValue)
+    {
+        _score += scoreValue;
+        // While playing, "Best" shows the new record live as soon as it is beaten.
+        _hud.SetScore(_score, Mathf.Max(_score, _highScore));
+    }
+
+    private void OnPlayerDied()
+    {
+        if (_score > _highScore)
+        {
+            _highScore = _score;
+            HighScore.Save(_highScore);
+        }
     }
 }
