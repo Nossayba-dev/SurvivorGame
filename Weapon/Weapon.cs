@@ -5,7 +5,7 @@ public partial class Weapon : Node2D
 {
     // The scene to create for each shot. Assigned in the Inspector (Player.tscn).
     [Export] public PackedScene ProjectileScene;
-    [Export] public float FireInterval = 0.8f;
+    [Export] public float FireInterval = 0.6f;
     [Export] public float Range = 400f;
     [Export] public int Damage = 1;
     // The fastest the weapon can ever fire, no matter the level.

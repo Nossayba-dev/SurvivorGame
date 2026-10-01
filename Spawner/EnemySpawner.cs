@@ -68,7 +68,7 @@ public partial class EnemySpawner : Node
         enemy.GlobalPosition = GetSpawnPosition();
 
         // Stats depend on the wave. Set BEFORE AddChild, because Enemy._Ready reads MaxHealth.
-        enemy.MaxHealth = 2 + Wave;
+        enemy.MaxHealth = 1 + Wave;
         enemy.Speed = Mathf.Min(70 + Wave * 10, 190);
         enemy.ScoreValue = 10 * Wave;
 
