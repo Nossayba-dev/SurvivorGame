@@ -3,11 +3,15 @@ using Godot;
 // A basic enemy that walks straight towards the player and can be damaged.
 public partial class Enemy : CharacterBody2D
 {
+    // Emitted once when the enemy dies. The spawner listens to it to count the score.
+    [Signal] public delegate void DiedEventHandler(int scoreValue);
+
     [Export] public float Speed = 100f;
     [Export] public int MaxHealth = 3;
     // Damage dealt to the player on contact.
     [Export] public int Damage = 1;
     [Export] public int XpValue = 1;
+    [Export] public int ScoreValue = 10;
     // The gem scene to drop on death. Assigned in Enemy.tscn.
     [Export] public PackedScene XpGemScene;
 
@@ -55,6 +59,7 @@ public partial class Enemy : CharacterBody2D
     private void Die()
     {
         _isDead = true;
+        EmitSignal(SignalName.Died, ScoreValue);
         DropXpGem();
         QueueFree();
     }
