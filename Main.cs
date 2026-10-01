@@ -7,6 +7,7 @@ public partial class Main : Node2D
     private Player _player;
     private EnemySpawner _spawner;
     private Hud _hud;
+    private GameOverScreen _gameOverScreen;
 
     private float _elapsed;
     private int _score;
@@ -18,6 +19,7 @@ public partial class Main : Node2D
         _player = GetNode<Player>("Player");
         _spawner = GetNode<EnemySpawner>("EnemySpawner");
         _hud = GetNode<Hud>("Hud");
+        _gameOverScreen = GetNode<GameOverScreen>("GameOverScreen");
 
         // Wire signals to HUD methods. The method signatures match the signal parameters.
         _player.HealthChanged += _hud.SetHealth;
@@ -25,6 +27,7 @@ public partial class Main : Node2D
         _spawner.WaveChanged += _hud.SetWave;
         _spawner.EnemyKilled += OnEnemyKilled;
         _player.Died += OnPlayerDied;
+        _gameOverScreen.RestartRequested += OnRestartRequested;
 
         _highScore = HighScore.Load();
 
@@ -53,10 +56,23 @@ public partial class Main : Node2D
 
     private void OnPlayerDied()
     {
-        if (_score > _highScore)
+        bool isNewHighScore = _score > _highScore;
+        if (isNewHighScore)
         {
             _highScore = _score;
             HighScore.Save(_highScore);
         }
+
+        // Freeze every node whose process_mode is "Inherit" or "Pausable".
+        // GameOverScreen uses "Always", so its button still works.
+        GetTree().Paused = true;
+        _gameOverScreen.ShowResults(_score, _highScore, isNewHighScore, _elapsed, _player.Level);
+    }
+
+    private void OnRestartRequested()
+    {
+        GetTree().Paused = false;
+        // Destroys the whole Main scene and loads it again from Main.tscn: a fresh game.
+        GetTree().ReloadCurrentScene();
     }
 }

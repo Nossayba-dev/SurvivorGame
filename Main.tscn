@@ -6,6 +6,7 @@
 [ext_resource type="Script" path="res://Spawner/EnemySpawner.cs" id="4_spawner"]
 [ext_resource type="Script" path="res://Main.cs" id="5_main"]
 [ext_resource type="PackedScene" path="res://UI/Hud.tscn" id="6_hud"]
+[ext_resource type="PackedScene" path="res://UI/GameOverScreen.tscn" id="7_gameover"]
 
 [node name="Main" type="Node2D" unique_id=1903468414]
 script = ExtResource("5_main")
@@ -34,3 +35,5 @@ WorldNode = NodePath("../World")
 [node name="SpawnTimer" type="Timer" parent="EnemySpawner"]
 
 [node name="Hud" parent="." instance=ExtResource("6_hud")]
+
+[node name="GameOverScreen" parent="." instance=ExtResource("7_gameover")]
