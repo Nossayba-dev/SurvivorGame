@@ -1,9 +1,20 @@
 [gd_scene format=3 uid="uid://rcrf0bjkitdi"]
 
 [ext_resource type="PackedScene" path="res://Player/Player.tscn" id="1_player"]
+[ext_resource type="PackedScene" path="res://World/World.tscn" id="2_world"]
 
 [node name="Main" type="Node2D" unique_id=1903468414]
 
+[node name="World" parent="." unique_id=1741633455 instance=ExtResource("2_world")]
+
 [node name="Player" parent="." unique_id=1551000132 instance=ExtResource("1_player")]
-position = Vector2(576, 324)
 Speed = 500.0
+
+[node name="Camera2D" type="Camera2D" parent="Player" unique_id=1001991565]
+zoom = Vector2(2, 2)
+limit_left = -1200
+limit_top = -800
+limit_right = 1200
+limit_bottom = 800
+position_smoothing_enabled = true
+position_smoothing_speed = 8.0
