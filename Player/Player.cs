@@ -4,9 +4,11 @@ using Godot;
 // The player character. Reads keyboard input, moves the body, and owns the player's health.
 public partial class Player : CharacterBody2D
 {
-    // Custom signals. Godot generates a C# event from each delegate: HealthChanged, Died.
+    // Custom signals. Godot generates a C# event from each delegate (HealthChanged, XpChanged...).
     // The name must end with "EventHandler".
     [Signal] public delegate void HealthChangedEventHandler(int health, int maxHealth);
+    [Signal] public delegate void XpChangedEventHandler(int xp, int xpToNextLevel, int level);
+    [Signal] public delegate void LeveledUpEventHandler(int level);
     [Signal] public delegate void DiedEventHandler();
 
     // Movement speed in pixels per second. [Export] makes it editable in the Inspector.
@@ -18,6 +20,11 @@ public partial class Player : CharacterBody2D
     // Public to read, private to change: only the Player decides its own health.
     public int Health { get; private set; }
     public bool IsDead { get; private set; }
+    public int Level { get; private set; } = 1;
+    public int Xp { get; private set; }
+
+    // Computed property: recalculated every time it is read. Level 1 needs 3 XP, then 5, 7, 9...
+    public int XpToNextLevel => 3 + (Level - 1) * 2;
 
     private Area2D _hurtbox;
     private Weapon _weapon;
@@ -78,6 +85,36 @@ public partial class Player : CharacterBody2D
 
         if (Health == 0)
             Die();
+    }
+
+    public void AddXp(int amount)
+    {
+        if (IsDead)
+            return;
+
+        Xp += amount;
+
+        // "while" and not "if": a big XP gain could give several levels at once.
+        while (Xp >= XpToNextLevel)
+        {
+            Xp -= XpToNextLevel;
+            LevelUp();
+        }
+
+        EmitSignal(SignalName.XpChanged, Xp, XpToNextLevel, Level);
+    }
+
+    private void LevelUp()
+    {
+        Level++;
+        _weapon.Upgrade(Level);
+
+        // Each level: +1 max health and heal 3.
+        MaxHealth++;
+        Health = Math.Min(Health + 3, MaxHealth);
+        EmitSignal(SignalName.HealthChanged, Health, MaxHealth);
+
+        EmitSignal(SignalName.LeveledUp, Level);
     }
 
     private void Die()

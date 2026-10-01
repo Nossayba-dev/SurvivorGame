@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://51buyl08bueg"]
 
 [ext_resource type="Script" uid="uid://dxtrcjvhdg7m1" path="res://Enemy/Enemy.cs" id="1_enemy"]
+[ext_resource type="PackedScene" path="res://Pickups/XpGem.tscn" id="2_xpgem"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_enemy"]
 radius = 14.0
@@ -10,6 +11,7 @@ collision_layer = 4
 collision_mask = 7
 motion_mode = 1
 script = ExtResource("1_enemy")
+XpGemScene = ExtResource("2_xpgem")
 
 [node name="Visual" type="Polygon2D" parent="." unique_id=1799373025]
 color = Color(0.9, 0.25, 0.25, 1)
