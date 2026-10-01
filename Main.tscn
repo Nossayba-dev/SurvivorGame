@@ -4,8 +4,11 @@
 [ext_resource type="PackedScene" path="res://World/World.tscn" id="2_world"]
 [ext_resource type="PackedScene" uid="uid://51buyl08bueg" path="res://Enemy/Enemy.tscn" id="3_enemy"]
 [ext_resource type="Script" path="res://Spawner/EnemySpawner.cs" id="4_spawner"]
+[ext_resource type="Script" path="res://Main.cs" id="5_main"]
+[ext_resource type="PackedScene" path="res://UI/Hud.tscn" id="6_hud"]
 
 [node name="Main" type="Node2D" unique_id=1903468414]
+script = ExtResource("5_main")
 
 [node name="World" parent="." unique_id=1741633455 instance=ExtResource("2_world")]
 
@@ -29,3 +32,5 @@ EnemyContainer = NodePath("../Enemies")
 WorldNode = NodePath("../World")
 
 [node name="SpawnTimer" type="Timer" parent="EnemySpawner"]
+
+[node name="Hud" parent="." instance=ExtResource("6_hud")]
