@@ -1,6 +1,8 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://Player/Player.cs" id="1_player"]
+[ext_resource type="Script" path="res://Weapon/Weapon.cs" id="2_weapon"]
+[ext_resource type="PackedScene" path="res://Projectile/Projectile.tscn" id="3_projectile"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_player"]
 radius = 16.0
@@ -17,3 +19,9 @@ polygon = PackedVector2Array(-16, -16, 16, -16, 16, 16, -16, 16)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CircleShape2D_player")
+
+[node name="Weapon" type="Node2D" parent="."]
+script = ExtResource("2_weapon")
+ProjectileScene = ExtResource("3_projectile")
+
+[node name="Timer" type="Timer" parent="Weapon"]
