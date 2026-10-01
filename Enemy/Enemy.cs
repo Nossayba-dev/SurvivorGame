@@ -5,6 +5,8 @@ public partial class Enemy : CharacterBody2D
 {
     [Export] public float Speed = 100f;
     [Export] public int MaxHealth = 3;
+    // Damage dealt to the player on contact.
+    [Export] public int Damage = 1;
 
     // The node we are chasing. Found once in _Ready.
     private Node2D _target;

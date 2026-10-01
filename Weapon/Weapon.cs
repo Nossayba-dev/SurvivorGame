@@ -18,6 +18,11 @@ public partial class Weapon : Node2D
         _timer.Start();
     }
 
+    public void Stop()
+    {
+        _timer.Stop();
+    }
+
     private void Fire()
     {
         Node2D target = FindNearestEnemy();
