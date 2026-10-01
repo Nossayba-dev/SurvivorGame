@@ -12,6 +12,7 @@ size = Vector2(2528, 64)
 script = ExtResource("1_world")
 
 [node name="Walls" type="StaticBody2D" parent="."]
+collision_mask = 0
 
 [node name="Left" type="CollisionShape2D" parent="Walls"]
 position = Vector2(-1232, 0)
