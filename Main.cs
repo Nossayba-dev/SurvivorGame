@@ -16,7 +16,7 @@ public partial class Main : Node2D
     public override void _Ready()
     {
         // Children are ready before their parent, so these nodes are fully set up already.
-        _player = GetNode<Player>("Player");
+        _player = GetNode<Player>("Entities/Player");
         _spawner = GetNode<EnemySpawner>("EnemySpawner");
         _hud = GetNode<Hud>("Hud");
         _gameOverScreen = GetNode<GameOverScreen>("GameOverScreen");

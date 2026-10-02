@@ -1,6 +1,8 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://World/World.cs" id="1_world"]
+[ext_resource type="PackedScene" path="res://World/House.tscn" id="2_house"]
+[ext_resource type="PackedScene" path="res://World/TreeProp.tscn" id="3_tree"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_vertical"]
 size = Vector2(64, 1728)
@@ -9,7 +11,10 @@ size = Vector2(64, 1728)
 size = Vector2(2528, 64)
 
 [node name="World" type="Node2D"]
+z_index = -5
 script = ExtResource("1_world")
+HouseScene = ExtResource("2_house")
+TreeScene = ExtResource("3_tree")
 
 [node name="Walls" type="StaticBody2D" parent="."]
 collision_mask = 0

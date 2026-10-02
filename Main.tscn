@@ -11,13 +11,21 @@
 [node name="Main" type="Node2D" unique_id=1903468414]
 script = ExtResource("5_main")
 
-[node name="World" parent="." unique_id=1741633455 instance=ExtResource("2_world")]
+[node name="World" parent="." unique_id=1741633455 node_paths=PackedStringArray("PropsContainer") instance=ExtResource("2_world")]
+PropsContainer = NodePath("../Entities/Props")
 
-[node name="Enemies" type="Node2D" parent="." unique_id=1664350958]
+[node name="Entities" type="Node2D" parent="."]
+y_sort_enabled = true
 
-[node name="Player" parent="." unique_id=1551000132 instance=ExtResource("1_player")]
+[node name="Props" type="Node2D" parent="Entities"]
+y_sort_enabled = true
 
-[node name="Camera2D" type="Camera2D" parent="Player" unique_id=1001991565]
+[node name="Enemies" type="Node2D" parent="Entities" unique_id=1664350958]
+y_sort_enabled = true
+
+[node name="Player" parent="Entities" unique_id=1551000132 instance=ExtResource("1_player")]
+
+[node name="Camera2D" type="Camera2D" parent="Entities/Player" unique_id=1001991565]
 zoom = Vector2(2, 2)
 limit_left = -1200
 limit_top = -800
@@ -29,7 +37,7 @@ position_smoothing_speed = 8.0
 [node name="EnemySpawner" type="Node" parent="." node_paths=PackedStringArray("EnemyContainer", "WorldNode")]
 script = ExtResource("4_spawner")
 EnemyScene = ExtResource("3_enemy")
-EnemyContainer = NodePath("../Enemies")
+EnemyContainer = NodePath("../Entities/Enemies")
 WorldNode = NodePath("../World")
 
 [node name="SpawnTimer" type="Timer" parent="EnemySpawner"]

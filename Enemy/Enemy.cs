@@ -28,10 +28,17 @@ public partial class Enemy : CharacterBody2D
     private int _health;
     private bool _isDead;
 
+    // Obstacle avoidance: when blocked by a house or tree, walk along it for a short time.
+    private Vector2 _detourDirection;
+    private float _detourTimer;
+    // +1 or -1: which way this enemy goes around obstacles. Random, so the crowd splits up.
+    private int _detourSide;
+
     // Called once by Godot when the node enters the scene tree, after its children are ready.
     public override void _Ready()
     {
         _health = MaxHealth;
+        _detourSide = GD.Randf() < 0.5f ? 1 : -1;
 
         var visual = GetNode<CharacterVisual>("Visual");
         visual.ShirtColor = ShirtColors[GD.RandRange(0, ShirtColors.Length - 1)];
@@ -46,9 +53,39 @@ public partial class Enemy : CharacterBody2D
         if (!IsInstanceValid(_target))
             return;
 
+        float dt = (float)delta;
         Vector2 direction = GlobalPosition.DirectionTo(_target.GlobalPosition);
+
+        if (_detourTimer > 0)
+        {
+            _detourTimer -= dt;
+            direction = _detourDirection;
+        }
+
         Velocity = direction * Speed;
+        Vector2 before = GlobalPosition;
         MoveAndSlide();
+
+        // Moved less than 30% of what we wanted? We are pushing against something.
+        bool isStuck = GlobalPosition.DistanceTo(before) < Speed * dt * 0.3f;
+        if (isStuck && _detourTimer <= 0)
+            StartDetour();
+    }
+
+    // If the obstacle is a house, tree or wall, walk along its surface for a moment.
+    private void StartDetour()
+    {
+        for (int i = 0; i < GetSlideCollisionCount(); i++)
+        {
+            KinematicCollision2D collision = GetSlideCollision(i);
+            if (collision.GetCollider() is not StaticBody2D)
+                continue;   // blocked by another character: just keep pushing
+
+            // The normal points out of the obstacle; Orthogonal() turns it 90° to follow the surface.
+            _detourDirection = collision.GetNormal().Orthogonal() * _detourSide;
+            _detourTimer = 0.5f;
+            return;
+        }
     }
 
     public void TakeDamage(int amount)

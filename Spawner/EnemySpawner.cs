@@ -21,6 +21,8 @@ public partial class EnemySpawner : Node
     private Timer _spawnTimer;
     private Node2D _player;
     private float _waveTimer;
+    // The space a new enemy needs: used to check that a spawn point is not inside a house or tree.
+    private readonly CircleShape2D _spawnCheckShape = new() { Radius = 20 };
 
     public override void _Ready()
     {
@@ -64,8 +66,12 @@ public partial class EnemySpawner : Node
 
     private void SpawnEnemy()
     {
+        Vector2? position = FindSpawnPosition();
+        if (position == null)
+            return;
+
         var enemy = EnemyScene.Instantiate<Enemy>();
-        enemy.GlobalPosition = GetSpawnPosition();
+        enemy.GlobalPosition = position.Value;
 
         // Stats depend on the wave. Set BEFORE AddChild, because Enemy._Ready reads MaxHealth.
         enemy.MaxHealth = 1 + Wave;
@@ -76,14 +82,35 @@ public partial class EnemySpawner : Node
         EnemyContainer.AddChild(enemy);
     }
 
-    // A random point on a circle around the player, kept inside the map walls.
-    private Vector2 GetSpawnPosition()
+    // A random free point on a circle around the player, inside the map.
+    // Returns null (Vector2? is a "nullable" struct) if 10 tries all landed on an obstacle.
+    private Vector2? FindSpawnPosition()
     {
-        float angle = GD.Randf() * Mathf.Tau;
-        Vector2 position = _player.GlobalPosition + Vector2.FromAngle(angle) * SpawnDistance;
+        Vector2 halfMap = WorldNode.MapSize / 2 - new Vector2(80, 80);
 
-        Vector2 halfMap = WorldNode.MapSize / 2 - new Vector2(40, 40);
-        return position.Clamp(-halfMap, halfMap);
+        for (int attempt = 0; attempt < 10; attempt++)
+        {
+            float angle = GD.Randf() * Mathf.Tau;
+            Vector2 position = _player.GlobalPosition + Vector2.FromAngle(angle) * SpawnDistance;
+            position = position.Clamp(-halfMap, halfMap);
+
+            if (IsFree(position))
+                return position;
+        }
+        return null;
+    }
+
+    // Asks the physics engine: "would a circle of radius 20 here touch a wall, house or tree?"
+    private bool IsFree(Vector2 position)
+    {
+        var query = new PhysicsShapeQueryParameters2D
+        {
+            Shape = _spawnCheckShape,
+            Transform = new Transform2D(0, position),
+            CollisionMask = 1,   // layer 1 = world (walls, houses, trees)
+        };
+        PhysicsDirectSpaceState2D space = GetViewport().World2D.DirectSpaceState;
+        return space.IntersectShape(query, 1).Count == 0;
     }
 
     // Relays each enemy's Died signal as a single spawner-level signal.
