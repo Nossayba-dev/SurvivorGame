@@ -2,9 +2,10 @@
 
 [ext_resource type="Script" uid="uid://dxtrcjvhdg7m1" path="res://Enemy/Enemy.cs" id="1_enemy"]
 [ext_resource type="PackedScene" path="res://Pickups/XpGem.tscn" id="2_xpgem"]
+[ext_resource type="Script" path="res://Visuals/CharacterVisual.cs" id="3_visual"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_enemy"]
-radius = 14.0
+radius = 12.0
 
 [node name="Enemy" type="CharacterBody2D" unique_id=348692849 groups=["enemies"]]
 collision_layer = 4
@@ -13,9 +14,16 @@ motion_mode = 1
 script = ExtResource("1_enemy")
 XpGemScene = ExtResource("2_xpgem")
 
-[node name="Visual" type="Polygon2D" parent="." unique_id=1799373025]
-color = Color(0.9, 0.25, 0.25, 1)
-polygon = PackedVector2Array(0, -16, 16, 0, 0, 16, -16, 0)
+[node name="Visual" type="Node2D" parent="." unique_id=1799373025]
+script = ExtResource("3_visual")
+SkinColor = Color(0.56, 0.74, 0.45, 1)
+ShirtColor = Color(0.45, 0.36, 0.52, 1)
+PantsColor = Color(0.32, 0.28, 0.24, 1)
+ShoeColor = Color(0.18, 0.15, 0.13, 1)
+EyeColor = Color(0.85, 0.1, 0.1, 1)
+HasHair = false
+ZombieStyle = true
+StepFrequency = 0.1
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=942023590]
 shape = SubResource("CircleShape2D_enemy")

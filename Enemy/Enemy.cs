@@ -15,6 +15,14 @@ public partial class Enemy : CharacterBody2D
     // The gem scene to drop on death. Assigned in Enemy.tscn.
     [Export] public PackedScene XpGemScene;
 
+    // Torn shirt colors picked at random so the zombies don't all look the same.
+    // static readonly: one shared array for all enemies, created once.
+    private static readonly Color[] ShirtColors =
+    {
+        new(0.45f, 0.36f, 0.52f), new(0.55f, 0.3f, 0.28f), new(0.3f, 0.42f, 0.5f),
+        new(0.5f, 0.48f, 0.3f), new(0.35f, 0.35f, 0.38f),
+    };
+
     // The node we are chasing. Found once in _Ready.
     private Node2D _target;
     private int _health;
@@ -24,6 +32,9 @@ public partial class Enemy : CharacterBody2D
     public override void _Ready()
     {
         _health = MaxHealth;
+
+        var visual = GetNode<CharacterVisual>("Visual");
+        visual.ShirtColor = ShirtColors[GD.RandRange(0, ShirtColors.Length - 1)];
 
         // The Player adds itself to the "player" group in Player.tscn.
         _target = GetTree().GetFirstNodeInGroup("player") as Node2D;
