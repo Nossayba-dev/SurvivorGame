@@ -601,16 +601,16 @@ private void SpawnEnemy()
     enemy.MaxHealth = 1 + Wave;          // BEFORE AddChild: Enemy._Ready copies MaxHealth into _health
     enemy.Speed = Mathf.Min(70 + Wave * 10, 190);
     enemy.ScoreValue = 10 * Wave;
-    enemy.Died += OnEnemyDied;           // subscribe to the new enemy's signal
-    EnemyContainer.AddChild(enemy);
+	enemy.Died += OnEnemyDied;           // subscribe to the new enemy's signal
+	EnemyContainer.AddChild(enemy);
 }
 
 private Vector2 GetSpawnPosition()
 {
-    float angle = GD.Randf() * Mathf.Tau;                     // random angle 0..2π
-    Vector2 position = _player.GlobalPosition + Vector2.FromAngle(angle) * SpawnDistance;
-    Vector2 halfMap = WorldNode.MapSize / 2 - new Vector2(40, 40);
-    return position.Clamp(-halfMap, halfMap);                 // stay inside the walls
+	float angle = GD.Randf() * Mathf.Tau;                     // random angle 0..2π
+	Vector2 position = _player.GlobalPosition + Vector2.FromAngle(angle) * SpawnDistance;
+	Vector2 halfMap = WorldNode.MapSize / 2 - new Vector2(40, 40);
+	return position.Clamp(-halfMap, halfMap);                 // stay inside the walls
 }
 ```
 
@@ -635,12 +635,12 @@ private Vector2 GetSpawnPosition()
 ```text
 Hud (CanvasLayer)                    ← drawn on top of the game, ignores the camera
 └── Margin (MarginContainer)         ← full screen, 16/12 px padding
-    └── Rows (VBoxContainer)         ← stacks vertically
-        ├── XpBar (ProgressBar)
-        └── TopRow (HBoxContainer)   ← lays out horizontally
-            ├── HealthBar, HealthLabel, LevelLabel, WaveLabel, TimeLabel
-            ├── Spacer (expands → pushes the rest right)
-            └── ScoreLabel, HighScoreLabel   (added in Part 9)
+	└── Rows (VBoxContainer)         ← stacks vertically
+		├── XpBar (ProgressBar)
+		└── TopRow (HBoxContainer)   ← lays out horizontally
+			├── HealthBar, HealthLabel, LevelLabel, WaveLabel, TimeLabel
+			├── Spacer (expands → pushes the rest right)
+			└── ScoreLabel, HighScoreLabel   (added in Part 9)
 ```
 
 ```csharp
@@ -649,9 +649,9 @@ _healthBar = GetNode<ProgressBar>("%HealthBar");     // % = scene-unique name
 
 public void SetHealth(int health, int maxHealth)
 {
-    _healthBar.MaxValue = maxHealth;
-    _healthBar.Value = health;
-    _healthLabel.Text = $"{health} / {maxHealth}";
+	_healthBar.MaxValue = maxHealth;
+	_healthBar.Value = health;
+	_healthLabel.Text = $"{health} / {maxHealth}";
 }
 ```
 
@@ -685,16 +685,16 @@ _hud.SetHealth(_player.Health, _player.MaxHealth);   // signals only report CHAN
 ```csharp
 public static class HighScore
 {
-    private const string SavePath = "user://save.cfg";
+	private const string SavePath = "user://save.cfg";
 
-    public static int Load()
-    {
-        var config = new ConfigFile();
-        if (config.Load(SavePath) != Error.Ok) return 0;     // no file yet → 0
-        return (int)config.GetValue("scores", "high_score", 0);
-    }
+	public static int Load()
+	{
+		var config = new ConfigFile();
+		if (config.Load(SavePath) != Error.Ok) return 0;     // no file yet → 0
+		return (int)config.GetValue("scores", "high_score", 0);
+	}
 
-    public static void Save(int score) { ... config.SetValue(...); config.Save(SavePath); }
+	public static void Save(int score) { ... config.SetValue(...); config.Save(SavePath); }
 }
 ```
 
@@ -793,7 +793,7 @@ DrawSetTransform(Vector2.Zero, 0, new Vector2(_facing, 1));     // mirror when f
 ```csharp
 public static class DrawUtils
 {
-    public static void DrawEllipse(this CanvasItem item, Vector2 center, Vector2 radius, Color color) { ... }
+	public static void DrawEllipse(this CanvasItem item, Vector2 center, Vector2 radius, Color color) { ... }
 }
 // usage inside any Node2D:
 this.DrawEllipse(new Vector2(0, 1), new Vector2(13, 5), shadowColor);
@@ -868,15 +868,15 @@ Main
 ```csharp
 public partial class House : StaticBody2D
 {
-    public override void _Ready()
-    {
-        var collision = new CollisionShape2D
-        {
-            Shape = new RectangleShape2D { Size = new Vector2(Width, WallHeight) },
-            Position = new Vector2(0, -WallHeight / 2),
-        };
-        AddChild(collision);
-    }
+	public override void _Ready()
+	{
+		var collision = new CollisionShape2D
+		{
+			Shape = new RectangleShape2D { Size = new Vector2(Width, WallHeight) },
+			Position = new Vector2(0, -WallHeight / 2),
+		};
+		AddChild(collision);
+	}
 }
 ```
 
@@ -1010,6 +1010,31 @@ _visual.FaceDirection = _weapon.HasTarget ? _weapon.AimDirection : Vector2.Zero;
 
 **Verified:** close-up screenshots aiming right, left, up and down; a 30 s test with a stationary player (22 kills, level 3); and the full death → restart loop.
 
+## Part 16: Food instead of gems
+**Commit:** `feat: replace XP gems with food pickups`
+
+**Goal:** the blue diamonds dropped by zombies become **food**: a random apple, chicken drumstick, cheese wedge or carrot, bobbing gently above a shadow. The gameplay doesn't change (magnet, XP on contact).
+
+**Files:** `Pickups/XpGem.cs` (draws the food), `Pickups/XpGem.tscn` (blue `Polygon2D` removed, pickup radius 8 → 10). The class keeps the name `XpGem`, so `Enemy.cs` and the rest of the code don't change at all. Only the **look** of the scene changed, not its **interface**.
+
+```csharp
+private enum FoodType { Apple, Drumstick, Cheese, Carrot }
+...
+_food = (FoodType)GD.RandRange(0, 3);   // enums are numbers underneath: cast a random 0..3
+...
+switch (_food)
+{
+    case FoodType.Apple: DrawApple(center); break;
+    ...
+}
+```
+
+**Concepts:**
+- **`enum`**: a named set of choices. `FoodType.Cheese` is much clearer than "type 2". Underneath it's an `int`, which is why `(FoodType)` can cast a random number.
+- **`switch`**: picks the drawing method for the current food.
+- **Bobbing**: the same animation trick as the characters. `_time` grows every frame, `Sin(_time * 4) * 2` moves the food up and down by 2 px, and `QueueRedraw()` redraws it. The shadow stays still (and shrinks slightly as the food goes up), which sells the floating effect.
+- **Random start phase** (`_time = GD.Randf() * 10`): without it, every piece of food would bob in perfect sync, which looks robotic.
+
 ## How each part was verified
 After every part: `dotnet build` (0 errors) → a **headless** run of the game (`--headless --quit-after N`) to catch runtime errors → commit. At the end, a temporary probe script played the whole loop (spawn → kill → XP → level → death → game over → restart). Godot's **movie writer** (`--write-movie`) also saved frames as images to check the HUD and Game Over layouts visually. The probe was then deleted.
 
@@ -1121,6 +1146,8 @@ bb97110  feat: turn enemies into animated zombies
 d790d3e  feat: build a village world with houses, trees and depth sorting
 b1156ac  docs: update README and screenshots for the village
 2eea221  feat: give the player a visible pistol that aims and fires
+52888e8  docs: document characters, village and pistol in guide and README
+8874de7  feat: replace XP gems with food pickups
 ```
 
 Run `git show <hash>` to see exactly what each step changed. It's a great way to re-study a feature.
