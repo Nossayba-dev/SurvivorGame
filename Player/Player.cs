@@ -28,6 +28,7 @@ public partial class Player : CharacterBody2D
 
     private Area2D _hurtbox;
     private Weapon _weapon;
+    private CharacterVisual _visual;
     private float _invulnerableTimer;
 
     public override void _Ready()
@@ -35,6 +36,14 @@ public partial class Player : CharacterBody2D
         Health = MaxHealth;
         _hurtbox = GetNode<Area2D>("Hurtbox");
         _weapon = GetNode<Weapon>("Weapon");
+        _visual = GetNode<CharacterVisual>("Visual");
+    }
+
+    public override void _Process(double delta)
+    {
+        // "Call down": the Player tells its own children what to do.
+        // While the gun has a target, the character turns to face where it aims.
+        _visual.FaceDirection = _weapon.HasTarget ? _weapon.AimDirection : Vector2.Zero;
     }
 
     public override void _PhysicsProcess(double delta)

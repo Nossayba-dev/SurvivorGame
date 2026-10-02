@@ -11,9 +11,5 @@ collision_layer = 8
 collision_mask = 5
 script = ExtResource("1_projectile")
 
-[node name="Visual" type="Polygon2D" parent="."]
-color = Color(1, 0.85, 0.2, 1)
-polygon = PackedVector2Array(-6, -3, 6, -3, 8, 0, 6, 3, -6, 3)
-
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CircleShape2D_projectile")

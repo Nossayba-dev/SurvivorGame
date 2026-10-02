@@ -18,6 +18,12 @@ public partial class CharacterVisual : Node2D
     [Export] public bool ZombieStyle = false;
     // How fast the legs swing compared to the movement speed.
     [Export] public float StepFrequency = 0.06f;
+    // True when a Weapon node draws the front arm (holding the gun): we don't draw it here.
+    [Export] public bool HoldsWeapon = false;
+
+    // Set by the owner to make the character face and look somewhere (e.g. where the gun aims).
+    // Vector2.Zero = no override: face the walking direction.
+    public Vector2 FaceDirection = Vector2.Zero;
 
     private CharacterBody2D _body;
 
@@ -47,11 +53,15 @@ public partial class CharacterVisual : Node2D
         bool isMoving = speed > 5f;
 
         if (isMoving)
-        {
             _walkPhase += speed * StepFrequency * dt;
-            _look = velocity / speed;
-            if (Mathf.Abs(velocity.X) > 5f)
-                _facing = velocity.X > 0 ? 1 : -1;
+
+        // Face the override direction if there is one, otherwise the walking direction.
+        Vector2 faceTowards = FaceDirection != Vector2.Zero ? FaceDirection : (isMoving ? velocity : Vector2.Zero);
+        if (faceTowards != Vector2.Zero)
+        {
+            _look = faceTowards.Normalized();
+            if (Mathf.Abs(faceTowards.X) > 0.1f)
+                _facing = faceTowards.X > 0 ? 1 : -1;
         }
         _moveAmount = Mathf.MoveToward(_moveAmount, isMoving ? 1f : 0f, dt * 6f);
 
@@ -96,7 +106,7 @@ public partial class CharacterVisual : Node2D
                 new Vector2(2, -7) + up, new Vector2(5, -11) + up,
             }, ShirtColor);
         }
-        else
+        else if (!HoldsWeapon)
         {
             DrawArm(new Vector2(7, -27) + up, new Vector2(9 + swing * 4, -16) + up);   // front arm
         }

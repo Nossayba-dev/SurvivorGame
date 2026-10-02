@@ -19,6 +19,7 @@ script = ExtResource("1_player")
 
 [node name="Visual" type="Node2D" parent="."]
 script = ExtResource("4_visual")
+HoldsWeapon = true
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CircleShape2D_player")
