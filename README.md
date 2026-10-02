@@ -2,7 +2,7 @@
 
 A 2D top-down **survivor-style** game built with **Godot 4.7** and **C#**.
 
-A village has been overrun by zombies. Run through its streets while your weapon fires automatically at the nearest zombie. Defeated zombies drop XP gems; collect them to level up and grow stronger. Every 30 seconds a new wave arrives: more zombies, faster and tougher. How long can you survive?
+A village has been overrun by zombies. Run through its streets while your pistol automatically aims and fires at the nearest zombie. Defeated zombies drop XP gems; collect them to level up and grow stronger. Every 30 seconds a new wave arrives: more zombies, faster and tougher. How long can you survive?
 
 ![Gameplay: the player surrounded by zombies in the village](docs/screenshots/gameplay.png)
 
@@ -16,7 +16,7 @@ A village has been overrun by zombies. Run through its streets while your weapon
 - **Houses and trees block movement and bullets**, so you can use them as cover
 - **Smooth 8-direction movement** with a camera that follows the player
 - **Zombies that chase you**, walk around obstacles, surround you and push against each other
-- **Automatic weapon** that targets the nearest enemy in range
+- **A pistol in the hero's hand** that turns to aim at the nearest zombie and fires on its own, with muzzle flash, recoil and brass bullets
 - **Health system**: contact damage, short invulnerability after each hit, hit flashes
 - **XP & leveling**: enemies drop gems that fly to you; each level makes you fire faster, hit harder and gain max HP
 - **Endless waves**: spawn rate, enemy count, health, speed and points scale every 30 seconds
@@ -37,7 +37,7 @@ Movement is bound to *physical* key positions, so it works the same on QWERTY an
 ## How to play
 
 1. Keep moving: zombies spawn just off-screen and come straight for you, walking around houses and trees on the way.
-2. Your weapon fires on its own every 0.6 s at the nearest enemy within range.
+2. Your pistol aims and fires on its own every 0.6 s at the nearest zombie within range. You just move.
 3. Walk near the cyan **XP gems** to collect them; they fly to you when you're close.
 4. Each **level up** gives +10% fire rate, +1 max HP and heals 3 HP, plus +1 damage on even levels.
 5. Each **wave** (every 30 s) makes enemies more numerous, faster, tougher and worth more points.
@@ -79,7 +79,7 @@ SurvivorGame/
 ├── Main.tscn / Main.cs      Game manager: connects every system together
 ├── Player/                  Player movement, health, XP and leveling
 ├── Visuals/                 Animated character drawing (shared by player and zombies) + drawing helpers
-├── Weapon/                  Auto-fire logic (timer → nearest enemy → projectile)
+├── Weapon/                  The pistol: aiming, drawing, auto-fire (timer → nearest zombie → bullet)
 ├── Projectile/              Bullet that flies straight and damages enemies
 ├── Enemy/                   Zombie chase AI with obstacle avoidance, health, death, XP drop
 ├── Pickups/                 XP gem with magnet effect
@@ -103,7 +103,7 @@ Main (game manager)
 │   ├── Enemies          zombies, created at runtime by the spawner
 │   └── Player           movement, health, XP
 │       ├── Visual       animated character drawing
-│       ├── Weapon       auto-fires projectiles
+│       ├── Weapon       the pistol: aims, draws itself, fires projectiles
 │       ├── Hurtbox      detects touching zombies
 │       └── Camera2D
 ├── EnemySpawner         creates zombies on free spots, manages waves
@@ -162,6 +162,7 @@ Each feature was developed and committed separately, so the git history reads li
 | 12 | Animated cartoon player character |
 | 13 | Zombie enemies |
 | 14 | Village world with houses, trees and depth sorting |
+| 15 | Visible pistol that aims and fires |
 
 Use `git log --oneline` to list them and `git show <commit>` to see exactly what each step changed.
 
